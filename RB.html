@@ -1,0 +1,2336 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catatan ASF — HPLC & GC-MS</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
+
+        :root {
+            --bg: #0f1117;
+            --bg2: #171b26;
+            --bg3: #1e2333;
+            --border: #2a3045;
+            --text: #e2e8f0;
+            --muted: #8892a4;
+            --accent1: #7c6af7;
+            /* purple — HPLC */
+            --accent2: #22d3a0;
+            /* teal   — GC-MS */
+            --accent3: #f59e42;
+            /* amber  — warning / rumus */
+            --accent4: #f472b6;
+            /* pink   — highlight */
+            --red: #ff6b6b;
+            --green: #4ade80;
+            --blue: #60a5fa;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        /* ── NAV ── */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(15, 17, 23, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 24px;
+            flex-wrap: wrap;
+        }
+
+        nav span {
+            font-size: 11px;
+            color: var(--muted);
+            margin-right: 6px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        nav a {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 20px;
+            text-decoration: none;
+            border: 1px solid transparent;
+            transition: all .2s;
+            color: var(--muted);
+        }
+
+        nav a:hover {
+            color: var(--text);
+            border-color: var(--border);
+        }
+
+        nav a.hplc {
+            color: var(--accent1);
+            border-color: var(--accent1)33;
+        }
+
+        nav a.gcms {
+            color: var(--accent2);
+            border-color: var(--accent2)33;
+        }
+
+        nav a.hplc:hover {
+            background: var(--accent1)22;
+        }
+
+        nav a.gcms:hover {
+            background: var(--accent2)22;
+        }
+
+        /* ── HERO ── */
+        .hero {
+            padding: 64px 24px 48px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .hero h1 {
+            font-size: clamp(28px, 5vw, 48px);
+            font-weight: 700;
+            line-height: 1.15;
+            margin-bottom: 16px;
+        }
+
+        .hero h1 .hplc-word {
+            color: var(--accent1);
+        }
+
+        .hero h1 .gcms-word {
+            color: var(--accent2);
+        }
+
+        .hero-sub {
+            color: var(--muted);
+            font-size: 14px;
+            max-width: 560px;
+        }
+
+        .chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .chip {
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid;
+        }
+
+        .chip.p {
+            color: var(--accent1);
+            border-color: var(--accent1)55;
+            background: var(--accent1)11;
+        }
+
+        .chip.g {
+            color: var(--accent2);
+            border-color: var(--accent2)55;
+            background: var(--accent2)11;
+        }
+
+        .chip.a {
+            color: var(--accent3);
+            border-color: var(--accent3)55;
+            background: var(--accent3)11;
+        }
+
+        /* ── LAYOUT ── */
+        .wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px 80px;
+        }
+
+        /* ── SECTION HEADER ── */
+        .sec-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 56px 0 28px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sec-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 5px 12px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .badge-hplc {
+            background: var(--accent1)22;
+            color: var(--accent1);
+        }
+
+        .badge-gcms {
+            background: var(--accent2)22;
+            color: var(--accent2);
+        }
+
+        .badge-val {
+            background: var(--accent3)22;
+            color: var(--accent3);
+        }
+
+        .badge-calc {
+            background: var(--accent4)22;
+            color: var(--accent4);
+        }
+
+        .sec-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        /* ── CARDS ── */
+        .card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px 24px;
+            margin-bottom: 16px;
+        }
+
+        .card h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card h3 .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .dot-p {
+            background: var(--accent1);
+        }
+
+        .dot-g {
+            background: var(--accent2);
+        }
+
+        .dot-a {
+            background: var(--accent3);
+        }
+
+        .dot-r {
+            background: var(--red);
+        }
+
+        .dot-gr {
+            background: var(--green);
+        }
+
+        /* ── GRID ── */
+        .grid2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .grid3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 14px;
+        }
+
+        @media(max-width:640px) {
+
+            .grid2,
+            .grid3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ── ANALOGY BOX ── */
+        .analogy {
+            background: linear-gradient(135deg, var(--accent1)15, var(--bg3));
+            border: 1px solid var(--accent1)44;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .analogy::before {
+            content: '💡';
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            font-size: 28px;
+            opacity: .4;
+        }
+
+        .analogy.gcms {
+            background: linear-gradient(135deg, var(--accent2)15, var(--bg3));
+            border-color: var(--accent2)44;
+        }
+
+        .analogy h4 {
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent1);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+
+        .analogy.gcms h4 {
+            color: var(--accent2);
+        }
+
+        .analogy p {
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        /* ── FORMULA BOX ── */
+        .formula {
+            background: var(--bg3);
+            border: 1.5px solid var(--accent3)66;
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin: 12px 0;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .formula .label {
+            font-size: 10px;
+            color: var(--accent3);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .formula .eq {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .formula .vars {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 2;
+        }
+
+        .formula .vars span {
+            color: var(--accent3);
+        }
+
+        /* ── TABLE ── */
+        .tbl-wrap {
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background: var(--bg3);
+            color: var(--muted);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border)88;
+            vertical-align: top;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: var(--bg3)88;
+        }
+
+        .td-ok {
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        .td-bad {
+            color: var(--red);
+            font-weight: 600;
+        }
+
+        .td-warn {
+            color: var(--accent3);
+            font-weight: 600;
+        }
+
+        .td-accent {
+            color: var(--accent1);
+            font-weight: 600;
+        }
+
+        .td-g {
+            color: var(--accent2);
+            font-weight: 600;
+        }
+
+        /* ── STEP BOX ── */
+        .steps {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .steps li {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            background: var(--bg3);
+            border-radius: 10px;
+            padding: 14px 16px;
+            border-left: 3px solid var(--accent1);
+        }
+
+        .steps.gcms li {
+            border-color: var(--accent2);
+        }
+
+        .steps.calc li {
+            border-color: var(--accent4);
+        }
+
+        .step-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent1);
+            min-width: 24px;
+            padding-top: 1px;
+        }
+
+        .steps.gcms .step-num {
+            color: var(--accent2);
+        }
+
+        .steps.calc .step-num {
+            color: var(--accent4);
+        }
+
+        .step-body {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .step-body strong {
+            color: var(--text);
+        }
+
+        .step-body code {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg);
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: var(--accent3);
+        }
+
+        /* ── ALERT BOXES ── */
+        .alert {
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin: 12px 0;
+            font-size: 13.5px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .alert-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .alert.warn {
+            background: var(--accent3)18;
+            border: 1px solid var(--accent3)44;
+        }
+
+        .alert.good {
+            background: var(--green)15;
+            border: 1px solid var(--green)44;
+        }
+
+        .alert.bad {
+            background: var(--red)15;
+            border: 1px solid var(--red)44;
+        }
+
+        .alert.info {
+            background: var(--blue)15;
+            border: 1px solid var(--blue)44;
+        }
+
+        .alert.pink {
+            background: var(--accent4)15;
+            border: 1px solid var(--accent4)44;
+        }
+
+        /* ── PILL TAG ── */
+        .pill {
+            display: inline-block;
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 2px 9px;
+            border-radius: 12px;
+            margin: 1px 2px;
+        }
+
+        .pill-p {
+            background: var(--accent1)22;
+            color: var(--accent1);
+        }
+
+        .pill-g {
+            background: var(--accent2)22;
+            color: var(--accent2);
+        }
+
+        .pill-a {
+            background: var(--accent3)22;
+            color: var(--accent3);
+        }
+
+        .pill-r {
+            background: var(--red)22;
+            color: var(--red);
+        }
+
+        .pill-gr {
+            background: var(--green)22;
+            color: var(--green);
+        }
+
+        .pill-pk {
+            background: var(--accent4)22;
+            color: var(--accent4);
+        }
+
+        /* ── DIVIDER ── */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border), transparent);
+            margin: 24px 0;
+        }
+
+        /* ── MINI CARD (inline stat) ── */
+        .stat-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 12px 0;
+        }
+
+        .stat {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 18px;
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .stat .val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stat .lbl {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .stat.p .val {
+            color: var(--accent1);
+        }
+
+        .stat.g .val {
+            color: var(--accent2);
+        }
+
+        .stat.a .val {
+            color: var(--accent3);
+        }
+
+        .stat.r .val {
+            color: var(--red);
+        }
+
+        .stat.gr .val {
+            color: var(--green);
+        }
+
+        /* ── CBT QUICK FIRE ── */
+        .qf {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .qf-q {
+            padding: 14px 18px;
+            font-weight: 600;
+            font-size: 13.5px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            user-select: none;
+            transition: background .15s;
+        }
+
+        .qf-q:hover {
+            background: var(--bg3);
+        }
+
+        .qf-q .arrow {
+            color: var(--muted);
+            font-size: 12px;
+            transition: transform .2s;
+        }
+
+        .qf-a {
+            display: none;
+            padding: 0 18px 14px;
+            font-size: 13.5px;
+            color: var(--text);
+            border-top: 1px solid var(--border);
+            padding-top: 12px;
+            line-height: 1.7;
+        }
+
+        .qf.open .qf-a {
+            display: block;
+        }
+
+        .qf.open .arrow {
+            transform: rotate(180deg);
+        }
+
+        /* ── FLOW DIAGRAM ── */
+        .flow {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            flex-wrap: wrap;
+            margin: 14px 0;
+        }
+
+        .flow-box {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            min-width: 90px;
+            flex-shrink: 0;
+        }
+
+        .flow-box.p {
+            border-color: var(--accent1)55;
+            color: var(--accent1);
+        }
+
+        .flow-box.g {
+            border-color: var(--accent2)55;
+            color: var(--accent2);
+        }
+
+        .flow-box.a {
+            border-color: var(--accent3)55;
+            color: var(--accent3);
+        }
+
+        .flow-arrow {
+            color: var(--muted);
+            font-size: 18px;
+            padding: 0 4px;
+            flex-shrink: 0;
+        }
+
+        /* ── COMPARE TABLE special ── */
+        .compare-hdr-p {
+            background: var(--accent1)22 !important;
+            color: var(--accent1) !important;
+        }
+
+        .compare-hdr-g {
+            background: var(--accent2)22 !important;
+            color: var(--accent2) !important;
+        }
+
+        /* ── HIGHLIGHT TEXT ── */
+        mark {
+            background: var(--accent3)33;
+            color: var(--accent3);
+            padding: 0 3px;
+            border-radius: 3px;
+        }
+
+        .hl-p {
+            color: var(--accent1);
+            font-weight: 600;
+        }
+
+        .hl-g {
+            color: var(--accent2);
+            font-weight: 600;
+        }
+
+        .hl-a {
+            color: var(--accent3);
+            font-weight: 600;
+        }
+
+        .hl-r {
+            color: var(--red);
+            font-weight: 600;
+        }
+
+        .hl-gr {
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        .hl-pk {
+            color: var(--accent4);
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 8px;
+        }
+
+        ul,
+        ol {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAV -->
+    <nav>
+        <span>ASF · Sem 4</span>
+        <a href="#hplc-prinsip" class="hplc">HPLC Prinsip</a>
+        <a href="#hplc-param" class="hplc">SST & Param</a>
+        <a href="#validasi" class="hplc">Validasi</a>
+        <a href="#hplc-calc" class="hplc">Hitung Kadar HPLC</a>
+        <a href="#gcms-prinsip" class="gcms">GC-MS Prinsip</a>
+        <a href="#gcms-ident" class="gcms">Identifikasi</a>
+        <a href="#gcms-calc" class="gcms">Hitung Kadar GC-MS</a>
+        <a href="#cbt" class="gcms">CBT Quick Fire</a>
+    </nav>
+
+    <!-- HERO -->
+    <div class="hero">
+        <div class="hero-tag">📚 Analisis Sediaan Farmasi · CBT 40 soal · 1 mnt/soal</div>
+        <h1>
+            <span class="hplc-word">HPLC / KCKT</span><br>
+            &amp; <span class="gcms-word">GC-MS</span><br>
+            Master Notes
+        </h1>
+        <p class="hero-sub">Semua yang perlu kamu tahu — prinsip, rumus, perhitungan, validasi, dan jebakan soal CBT —
+            dalam satu tempat.</p>
+        <div class="chips">
+            <span class="chip p">HPLC Reversed-Phase</span>
+            <span class="chip p">Parasetamol + Kafein</span>
+            <span class="chip a">Validasi ICH Q2(R1)</span>
+            <span class="chip g">GC-MS EI 70eV</span>
+            <span class="chip g">Menthol + Camphor</span>
+            <span class="chip a">CBT Ready</span>
+        </div>
+    </div>
+
+    <div class="wrapper">
+
+        <!-- ═══════════════════════════════════════════════════
+     BAGIAN 1 — HPLC PRINSIP
+═══════════════════════════════════════════════════ -->
+        <div class="sec-header" id="hplc-prinsip">
+            <span class="sec-badge badge-hplc">01</span>
+            <h2>HPLC / KCKT — Prinsip & Mekanisme</h2>
+        </div>
+
+        <div class="analogy">
+            <h4>🍜 Analogi Antrian Warteg</h4>
+            <p>Bayangkan kolom HPLC itu kayak <strong>antrian kasir warteg</strong>. Semua orang (molekul analit) masuk
+                bareng, tapi ada yang langsung bayar cepet (senyawa polar → elusi duluan) dan ada yang lama milih-milih
+                menu (senyawa nonpolar → retensi lebih lama di fase diam C18). Fase gerak itu kayak <strong>aliran orang
+                    yang dorong antrian maju</strong>. Detektor UV di ujung kasir = yang "ngehitung" siapa aja yang
+                lewat dan berapa banyak.</p>
+        </div>
+
+        <div class="grid2">
+            <div class="card">
+                <h3><span class="dot dot-p"></span>Apa itu HPLC?</h3>
+                <p>High Performance Liquid Chromatography = kromatografi cair tekanan tinggi. Memisahkan campuran
+                    berdasarkan <strong>perbedaan distribusi analit</strong> antara fase diam dan fase gerak di bawah
+                    tekanan tinggi (300–3000 psi).</p>
+                <div class="alert info" style="margin-top:10px">
+                    <span class="alert-icon">💡</span>
+                    <span>Cocok untuk senyawa <strong>tidak volatil, termolabil, konsentrasi kecil</strong> — beda sama
+                        GC yang butuh senyawa volatil!</span>
+                </div>
+            </div>
+            <div class="card">
+                <h3><span class="dot dot-p"></span>Reversed-Phase (RP-HPLC)</h3>
+                <p>Yang kita pakai di laprak ini:</p>
+                <ul>
+                    <li><strong>Fase diam:</strong> nonpolar — Kolom C18 (oktadesilsilana)</li>
+                    <li><strong>Fase gerak:</strong> polar — air : metanol : as. asetat (69:28:3)</li>
+                    <li><strong>Elusi:</strong> senyawa polar keluar duluan, nonpolar tertahan lebih lama</li>
+                </ul>
+                <div class="alert warn" style="margin-top:10px">
+                    <span class="alert-icon">⚠️</span>
+                    <span>Parasetamol (lebih polar → gugus -OH & -NH) elusi duluan tR ~1.32 min. Kafein lebih nonpolar →
+                        elusi belakangan tR ~2.11 min.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- KOMPONEN INSTRUMEN -->
+        <div class="card">
+            <h3><span class="dot dot-p"></span>Komponen Instrumen HPLC & Fungsinya</h3>
+            <div class="tbl-wrap">
+                <table>
+                    <tr>
+                        <th>Komponen</th>
+                        <th>Fungsi</th>
+                        <th>Detail Penting</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Pompa</strong></td>
+                        <td>Mengalirkan fase gerak dengan laju konstan</td>
+                        <td>Laprak: <span class="td-accent">2.0 mL/menit</span>. Fluktuasi pompa → variasi tR & area!
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Injector</strong></td>
+                        <td>Memasukkan sampel ke aliran fase gerak</td>
+                        <td>Volume injeksi: <span class="td-accent">10 µL</span>. Volume tidak konsisten → area tidak
+                            valid</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Kolom C18 (L1)</strong></td>
+                        <td>Fase diam nonpolar, tempat pemisahan terjadi</td>
+                        <td>4.6 mm × 10 cm, partikel 5 µm. Suhu kolom: <span class="td-accent">45±1°C</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Detektor UV</strong></td>
+                        <td>Mengukur absorbansi analit saat keluar kolom</td>
+                        <td>λ = <span class="td-accent">275 nm</span>. Respons = peak area (mAU·min)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Membran filter PTFE 0.45 µm</strong></td>
+                        <td>Menyaring fase gerak & sampel</td>
+                        <td>Mencegah partikel menyumbat kolom</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sonikator / Degassing</strong></td>
+                        <td>Menghilangkan gelembung udara dari fase gerak</td>
+                        <td>15–30 menit. Gelembung → noise & ghost peak!</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- ALUR ANALISIS -->
+        <div class="card">
+            <h3><span class="dot dot-p"></span>Alur Pemisahan di Kolom</h3>
+            <div class="flow">
+                <div class="flow-box p">Injeksi Sampel</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box a">Masuk Kolom C18</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box a">Kompetisi: FM vs FD</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box p">PCT keluar duluan</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box g">Kafein keluar belakang</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box g">Detektor UV 275 nm</div>
+            </div>
+            <p style="font-size:13px; color:var(--muted); margin-top:8px">FM = Fase Gerak · FD = Fase Diam · PCT =
+                Parasetamol</p>
+        </div>
+
+        <!-- FASE GERAK LAPRAK -->
+        <div class="card">
+            <h3><span class="dot dot-p"></span>Fase Gerak & Pengencer di Laprak</h3>
+            <div class="grid2">
+                <div>
+                    <p
+                        style="font-size:12px; color:var(--muted); margin-bottom:6px; font-family:'JetBrains Mono',monospace">
+                        FASE GERAK (analisis PCT+kafein)</p>
+                    <div class="formula" style="padding:12px 16px">
+                        <div class="eq" style="font-size:14px">Air HPLC : MeOH : As.Asetat = 69 : 28 : 3</div>
+                        <div class="vars">→ Saring PTFE 0.45 µm → degassing sonikasi 15–30 mnt</div>
+                    </div>
+                </div>
+                <div>
+                    <p
+                        style="font-size:12px; color:var(--muted); margin-bottom:6px; font-family:'JetBrains Mono',monospace">
+                        PENGENCER (larutan baku & sampel)</p>
+                    <div class="formula" style="padding:12px 16px">
+                        <div class="eq" style="font-size:14px">MeOH : As.Asetat Glasial = 95 : 5</div>
+                        <div class="vars">→ Homogenkan dalam lemari asam</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+     BAGIAN 2 — SST & PARAMETER
+═══════════════════════════════════════════════════ -->
+        <div class="sec-header" id="hplc-param">
+            <span class="sec-badge badge-hplc">02</span>
+            <h2>Parameter Kromatografi & SST</h2>
+        </div>
+
+        <div class="alert pink">
+            <span class="alert-icon">🎯</span>
+            <span><strong>System Suitability Test (SST / UKS)</strong> = ujian kelayakan sistem SEBELUM analisis sampel.
+                Kalau gagal SST → analisis tidak boleh dilanjutkan!</span>
+        </div>
+
+        <!-- PARAMETER TABLE -->
+        <div class="card">
+            <h3><span class="dot dot-p"></span>7 Parameter Kritis HPLC</h3>
+            <div class="tbl-wrap">
+                <table>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Simbol</th>
+                        <th>Rumus</th>
+                        <th>Syarat di Laprak</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Waktu Retensi</strong></td>
+                        <td class="mono">tR</td>
+                        <td>—</td>
+                        <td>PCT ~1.32 min · Kafein ~2.11 min · Stabil antar injeksi</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Faktor Retensi</strong></td>
+                        <td class="mono">k</td>
+                        <td class="mono">(tR − tM) / tM</td>
+                        <td>Makin besar k → makin lama di FD</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Resolusi</strong></td>
+                        <td class="mono">R</td>
+                        <td class="mono">2(tR2−tR1) / (W1+W2)</td>
+                        <td><span class="td-ok">≥ 1.4</span> (antara analit & baku internal)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tailing Factor</strong></td>
+                        <td class="mono">T</td>
+                        <td class="mono">W₀.₀₅ / 2f</td>
+                        <td><span class="td-ok">≤ 1.2</span> (laprak PCT+kafein)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Jumlah Lempeng (N)</strong></td>
+                        <td class="mono">N</td>
+                        <td class="mono">16(tR/W)² atau 5.54(tR/Wh/2)²</td>
+                        <td>Makin besar → kolom makin efisien</td>
+                    </tr>
+                    <tr>
+                        <td><strong>%RSD</strong></td>
+                        <td class="mono">%RSD</td>
+                        <td class="mono">(SD/x̄) × 100%</td>
+                        <td><span class="td-ok">≤ 2.0%</span> dari 5× injeksi ulang baku</td>
+                    </tr>
+                    <tr>
+                        <td><strong>RRT (Relative Retention Time)</strong></td>
+                        <td class="mono">RRT</td>
+                        <td class="mono">tR analit / tR ref</td>
+                        <td>PCT = 0.3 · Kafein = 0.5</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="grid2">
+            <div class="card">
+                <h3><span class="dot dot-a"></span>Tailing Factor — Apa Artinya?</h3>
+                <p><strong>T = 1.0</strong> → puncak sempurna simetris ✅</p>
+                <p><strong>T &gt; 1.2</strong> → tailing (ekor panjang ke kanan) — interaksi silanol, overloading</p>
+                <p><strong>T &lt; 1.0</strong> → fronting (ekor ke kiri) — jarang terjadi</p>
+                <div class="alert warn" style="margin-top:10px">
+                    <span class="alert-icon">⚠️</span>
+                    <span>Untuk kafein protokol FI VI: tailing factor ≤ 2.0 (lebih longgar dari laprak
+                        PCT+kafein)</span>
+                </div>
+            </div>
+            <div class="card">
+                <h3><span class="dot dot-a"></span>Resolusi — Artinya?</h3>
+                <p><strong>R &lt; 1.0</strong> → puncak tumpang tindih (overlap) ❌</p>
+                <p><strong>R = 1.0–1.4</strong> → hampir terpisah, kurang baik</p>
+                <p><strong>R ≥ 1.5</strong> → terpisah sempurna ✅</p>
+                <div class="alert good" style="margin-top:10px">
+                    <span class="alert-icon">✅</span>
+                    <span>Dari laprak: selisih tR PCT (1.32) dan kafein (2.11) besar → keduanya terpisah baik, tidak
+                        terjadi peak overlap!</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- BAKU INTERNAL -->
+        <div class="card">
+            <h3><span class="dot dot-p"></span>Baku Internal — Asam Benzoat</h3>
+            <p>Laprak PCT+kafein menggunakan <strong>asam benzoat P</strong> sebagai baku internal (IS).</p>
+            <div class="alert info">
+                <span class="alert-icon">💡</span>
+                <span><strong>Fungsi IS:</strong> Mengoreksi variasi sistem (fluktuasi pompa, volume injeksi tidak
+                    konsisten). Karena kadar dihitung sebagai <strong>rasio area analit / area IS</strong>
+                    (R<sub>U</sub> dan R<sub>S</sub>), bukan area mentah.</span>
+            </div>
+            <div class="formula">
+                <span class="label">Rumus Utama FI VI — mg per tablet PCT+Kafein</span>
+                <div class="eq">mg/tablet = (R<sub>U</sub> / R<sub>S</sub>) × (C<sub>S</sub> / C<sub>U</sub>) × L</div>
+                <div class="vars">
+                    <span>R<sub>U</sub></span> = rasio area analit sampel / area IS sampel<br>
+                    <span>R<sub>S</sub></span> = rasio area analit baku / area IS baku<br>
+                    <span>C<sub>S</sub></span> = kadar baku (mg/mL)<br>
+                    <span>C<sub>U</sub></span> = kadar sampel teoritis (mg/mL)<br>
+                    <span>L</span> = jumlah mg per tablet pada etiket
+                </div>
+            </div>
+        </div>
+
+        <!-- PROTOKOL KAFEIN MURNI — FI VI -->
+        <div class="card">
+            <h3><span class="dot dot-p"></span>Protokol Kafein Murni (FI VI) — Bedanya!</h3>
+            <div class="alert warn">
+                <span class="alert-icon">⚠️</span>
+                <span>Protokol kafein murni (halaman 955-956 FI VI) <strong>berbeda</strong> dari laprak campuran
+                    PCT+kafein! Hafal bedanya untuk CBT!</span>
+            </div>
+            <div class="tbl-wrap">
+                <table>
+                    <tr>
+                        <th>Aspek</th>
+                        <th class="compare-hdr-p">Laprak PCT + Kafein</th>
+                        <th class="compare-hdr-g">Protokol Kafein Murni FI VI</th>
+                    </tr>
+                    <tr>
+                        <td>Fase Gerak</td>
+                        <td>Air:MeOH:As.Asetat 69:28:3</td>
+                        <td>Buffer Na-Asetat:ACN:THF 1910:50:40, pH 4.5</td>
+                    </tr>
+                    <tr>
+                        <td>Kolom</td>
+                        <td>C18 4.6×10 cm, 5 µm</td>
+                        <td>L1 (C18) 4.6×15 cm</td>
+                    </tr>
+                    <tr>
+                        <td>Laju alir</td>
+                        <td>2.0 mL/menit</td>
+                        <td>~1.0 mL/menit</td>
+                    </tr>
+                    <tr>
+                        <td>Baku internal</td>
+                        <td>Asam Benzoat P</td>
+                        <td><strong>Tidak ada</strong> → external standard (rU/rS langsung)</td>
+                    </tr>
+                    <tr>
+                        <td>SST: larutan kesesuaian</td>
+                        <td>—</td>
+                        <td><strong>Teofilin</strong> (mirip kafein, bedanya di N-7)</td>
+                    </tr>
+                    <tr>
+                        <td>SST: Resolusi</td>
+                        <td>≥ 1.4</td>
+                        <td><strong>≥ 6.0</strong> antara teofilin & kafein!</td>
+                    </tr>
+                    <tr>
+                        <td>Rumus penetapan kadar</td>
+                        <td>(R<sub>U</sub>/R<sub>S</sub>)×(C<sub>S</sub>/C<sub>U</sub>)×L</td>
+                        <td><strong>50C(r<sub>U</sub>/r<sub>S</sub>)</strong></td>
+                    </tr>
+                    <tr>
+                        <td>RRT teofilin</td>
+                        <td>—</td>
+                        <td><strong>≈ 0.69</strong></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+
+        <!-- ═══════════════════════════════════════════════════
+     BAGIAN 3 — VALIDASI METODE
+═══════════════════════════════════════════════════ -->
+        <div class="sec-header" id="validasi">
+            <span class="sec-badge badge-val">03</span>
+            <h2>Validasi Metode Analitik (ICH Q2(R1))</h2>
+        </div>
+
+        <div class="analogy">
+            <h4>🏋️ Analogi Timbangan Pasar</h4>
+            <p>Validasi itu kayak <strong>ngetes apakah timbangan di pasar bisa dipercaya</strong>. Linearitas = apakah
+                skalanya lurus? Akurasi = apakah kalau kamu taruh 1 kg, dia nunjukkin 1 kg? Presisi = kalau kamu timbang
+                barang yang sama 6 kali, hasilnya konsisten? LOD = berat terkecil yang masih bisa dia deteksi? LOQ =
+                berat terkecil yang masih bisa dia ukur dengan akurat?</p>
+        </div>
+
+        <!-- PARAMETER VALIDASI -->
+        <div class="card">
+            <h3><span class="dot dot-a"></span>6 Parameter Validasi Wajib (ICH Q2(R1))</h3>
+            <div class="tbl-wrap">
+                <table>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Definisi</th>
+                        <th>Syarat FI VI / ICH</th>
+                        <th>Hasil Laprak</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Linearitas</strong></td>
+                        <td>Hubungan proporsional konsentrasi vs area puncak</td>
+                        <td>r ≥ 0.999 → <span class="td-ok">R² ≥ 0.9990</span></td>
+                        <td>PCT: R²=<span class="td-bad">0.9637</span> · Kafein: R²=<span class="td-bad">0.9417</span> ❌
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Akurasi</strong></td>
+                        <td>Kedekatan hasil ukur dengan nilai sebenarnya</td>
+                        <td>% Recovery <span class="td-ok">98–102%</span> (FI VI) atau 97–103% (ICH)</td>
+                        <td>Tidak dapat dihitung (linearitas belum memenuhi)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Presisi</strong></td>
+                        <td>Kesesuaian hasil pengukuran berulang</td>
+                        <td>%RSD <span class="td-ok">≤ 2.0%</span></td>
+                        <td>Tidak dapat dihitung</td>
+                    </tr>
+                    <tr>
+                        <td><strong>LOD</strong></td>
+                        <td>Konsentrasi terendah yang masih bisa <em>terdeteksi</em></td>
+                        <td>LOD = 3.3 × Sy/x / b</td>
+                        <td>Tidak dapat dihitung</td>
+                    </tr>
+                    <tr>
+                        <td><strong>LOQ</strong></td>
+                        <td>Konsentrasi terendah yang masih bisa <em>dikuantifikasi</em> akurat</td>
+                        <td>LOQ = 10 × Sy/x / b</td>
+                        <td>Tidak dapat dihitung</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Selektivitas</strong></td>
+                        <td>Kemampuan metode mengukur analit tanpa gangguan komponen lain</td>
+                        <td>Rs ≥ 2.0 antara kafein & komponen terdekat</td>
+                        <td>Baik — PCT & kafein terpisah jelas</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- LINEARITAS DETAIL -->
+        <div class="card">
+            <h3><span class="dot dot-a"></span>Linearitas — Rumus & Interpretasi</h3>
+            <div class="grid2">
+                <div>
+                    <p style="font-size:13px; margin-bottom:10px">Dari data kurva kalibrasi laprak:</p>
+                    <div class="formula">
+                        <span class="label">Persamaan Regresi Parasetamol</span>
+                        <div class="eq">y = 0.1517x − 7.1897</div>
+                        <div class="vars">R² = <span style="color:var(--red)">0.9637</span> ← TIDAK MEMENUHI</div>
+                    </div>
+                    <div class="formula">
+                        <span class="label">Persamaan Regresi Kafein</span>
+                        <div class="eq">y = 0.2791x + 4.907</div>
+                        <div class="vars">R² = <span style="color:var(--red)">0.9417</span> ← TIDAK MEMENUHI</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="alert bad">
+                        <span class="alert-icon">❌</span>
+                        <span><strong>Slope kafein (0.2791) &gt; PCT (0.1517)</strong> → detektor UV 275 nm lebih
+                            sensitif ke kafein. Kafein absorptivitas molar lebih tinggi di ~273 nm.</span>
+                    </div>
+                    <div class="alert warn" style="margin-top:8px">
+                        <span class="alert-icon">⚠️</span>
+                        <span><strong>Intercept PCT sangat jauh dari nol (−7.19)</strong> → ada galat sistematis,
+                            gangguan baseline, atau matriks pelarut tidak terkompensasi.</span>
+                    </div>
+                    <div class="alert warn" style="margin-top:8px">
+                        <span class="alert-icon">⚠️</span>
+                        <span><strong>Intercept kafein positif (+4.91)</strong> → baseline tidak stabil, kontaminasi,
+                            atau drift.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LOD LOQ -->
+        <div class="card">
+            <h3><span class="dot dot-a"></span>LOD & LOQ — Rumus Lengkap</h3>
+            <div class="grid2">
+                <div class="formula">
+                    <span class="label">Sy/x — Simpangan Baku Residual</span>
+                    <div class="eq">Sy/x = √[Σ(yi − ŷi)² / (n − 2)]</div>
+                    <div class="vars">yi = area terukur · ŷi = area prediksi · n = jumlah titik</div>
+                </div>
+                <div>
+                    <div class="formula">
+                        <span class="label">LOD</span>
+                        <div class="eq">LOD = 3.3 × Sy/x / b</div>
+                    </div>
+                    <div class="formula">
+                        <span class="label">LOQ</span>
+                        <div class="eq">LOQ = 10 × Sy/x / b</div>
+                        <div class="vars">b = slope kurva kalibrasi</div>
+                    </div>
+                </div>
+            </div>
+            <div class="alert info" style="margin-top:12px">
+                <span class="alert-icon">💡</span>
+                <span><strong>Ingat perbandingan:</strong> LOQ = 3 × LOD (karena 10/3.3 ≈ 3). LOQ selalu lebih besar
+                    dari LOD. Referensi Pereira et al. 2021 untuk kafein: LOD = 0.1 µg/mL, LOQ = 0.4 µg/mL (verifikasi:
+                    0.4 ≈ 4 × 0.1 ✓)</span>
+            </div>
+        </div>
+
+        <!-- SUMBER ERROR -->
+        <div class="card">
+            <h3><span class="dot dot-r"></span>Kenapa R² Jelek? — Semua Sumber Error</h3>
+            <div class="grid2">
+                <div>
+                    <p
+                        style="font-size:12px; color:var(--muted); margin-bottom:8px; font-family:'JetBrains Mono',monospace">
+                        PREPARASI SAMPEL</p>
+                    <ul>
+                        <li>Kesalahan pipetasi / pengenceran → konsentrasi aktual ≠ nominal</li>
+                        <li>Larutan baku tidak stabil (degradasi, adsorpsi)</li>
+                        <li>Pengaruh suhu & cahaya saat pengenceran serial</li>
+                    </ul>
+                </div>
+                <div>
+                    <p
+                        style="font-size:12px; color:var(--muted); margin-bottom:8px; font-family:'JetBrains Mono',monospace">
+                        INSTRUMEN</p>
+                    <ul>
+                        <li>Fluktuasi laju alir pompa → variasi elusi & lebar puncak</li>
+                        <li>Gelembung udara → noise artifacts, gangguan integrasi</li>
+                        <li>Volume injeksi tidak konsisten</li>
+                        <li>Kolom belum equilibrated / terkontaminasi</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div class="grid2">
+                <div>
+                    <p
+                        style="font-size:12px; color:var(--muted); margin-bottom:8px; font-family:'JetBrains Mono',monospace">
+                        KROMATOGRAFI</p>
+                    <ul>
+                        <li>Suhu lab tidak terkontrol → viskositas FM berubah</li>
+                        <li>Penguapan pelarut organik → komposisi FM bergeser</li>
+                        <li>Peak broadening akibat kontaminasi kolom</li>
+                    </ul>
+                </div>
+                <div>
+                    <p
+                        style="font-size:12px; color:var(--muted); margin-bottom:8px; font-family:'JetBrains Mono',monospace">
+                        PENGOLAHAN DATA</p>
+                    <ul>
+                        <li>Baseline drift → integrasi tidak akurat</li>
+                        <li>Parameter integrasi perangkat lunak tidak pas</li>
+                        <li>Batas awal/akhir integrasi tidak konsisten</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- VALIDASI REFERENSI -->
+        <div class="card">
+            <h3><span class="dot dot-gr"></span>Validasi Metode yang Ideal (Referensi Pereira et al. 2021)</h3>
+            <div class="tbl-wrap">
+                <table>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Hasil Ideal (Kafein, 210 nm)</th>
+                        <th>Hasil Laprak Kita</th>
+                    </tr>
+                    <tr>
+                        <td>Rentang linearitas</td>
+                        <td class="td-ok">0.4–250 µg/mL</td>
+                        <td>100–500 ppm</td>
+                    </tr>
+                    <tr>
+                        <td>R²</td>
+                        <td class="td-ok">0.9998</td>
+                        <td class="td-bad">0.9417</td>
+                    </tr>
+                    <tr>
+                        <td>LOD</td>
+                        <td class="td-ok">0.1 µg/mL</td>
+                        <td>Tidak terhitung</td>
+                    </tr>
+                    <tr>
+                        <td>LOQ</td>
+                        <td class="td-ok">0.4 µg/mL</td>
+                        <td>Tidak terhitung</td>
+                    </tr>
+                    <tr>
+                        <td>% Recovery</td>
+                        <td class="td-ok">99.97–100.08%</td>
+                        <td>Tidak terhitung</td>
+                    </tr>
+                    <tr>
+                        <td>%RSD presisi</td>
+                        <td class="td-ok">3.92% (≤4%)</td>
+                        <td>Tidak terhitung</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="alert info" style="margin-top:12px">
+                <span class="alert-icon">💡</span>
+                <span>Sharma et al. (2023) untuk laprak kita: R²=0.999 PCT, R²=1.0 kafein menggunakan fase gerak
+                    asetonitril–buffer fosfat pH 3.5. Cuervo Escobar et al. (2017) dengan FM air:MeOH:as.asetat
+                    (69:28:3) sama dengan laprak kita → R²=0.9989 dan 0.9982. Artinya kondisi laprak kita bisa mencapai
+                    R² bagus, masalahnya di eksekusi!</span>
+            </div>
+        </div>
+
+
+        <!-- ═══════════════════════════════════════════════════
+     BAGIAN 4 — PERHITUNGAN KADAR HPLC
+═══════════════════════════════════════════════════ -->
+        <div class="sec-header" id="hplc-calc">
+            <span class="sec-badge badge-calc">04</span>
+            <h2>Perhitungan Kadar HPLC — Step by Step</h2>
+        </div>
+
+        <!-- RUMUS UTAMA -->
+        <div class="grid2">
+            <div class="formula">
+                <span class="label">Penetapan Kadar — Campuran PCT+Kafein (FI VI)</span>
+                <div class="eq">mg/tablet = (R<sub>U</sub>/R<sub>S</sub>) × (C<sub>S</sub>/C<sub>U</sub>) × L</div>
+                <div class="vars">
+                    <span>R<sub>U</sub></span> = area analit sampel / area IS sampel<br>
+                    <span>R<sub>S</sub></span> = area analit baku / area IS baku<br>
+                    <span>C<sub>S</sub></span> = kadar baku (mg/mL)<br>
+                    <span>C<sub>U</sub></span> = kadar sampel teoritis (mg/mL)<br>
+                    <span>L</span> = klaim etiket (mg/tablet)
+                </div>
+            </div>
+            <div class="formula">
+                <span class="label">Penetapan Kadar — Kafein Murni FI VI</span>
+                <div class="eq">mg = 50C × (r<sub>U</sub> / r<sub>S</sub>)</div>
+                <div class="vars">
+                    <span>C</span> = kadar kafein BPFI dalam larutan baku (mg/mL)<br>
+                    <span>r<sub>U</sub></span> = area puncak kafein larutan uji<br>
+                    <span>r<sub>S</sub></span> = area puncak kafein larutan baku<br>
+                    <span>50</span> = volume akhir larutan uji (mL)
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP BY STEP KAFEIN PROTOKOL -->
+        <div class="card">
+            <h3><span class="dot dot-pk"></span>Contoh Perhitungan Lengkap — Protokol Kafein (Dari Laprak)</h3>
+            <div class="alert info" style="margin-bottom:14px">
+                <span class="alert-icon">📋</span>
+                <span><strong>Data:</strong> Baku kafein 5 mg / 25 mL → C = 200 ppm = 0.2 mg/mL. rS = 338.8604. rU =
+                    134.8604. Volume uji = 50 mL. Klaim etiket kafein = 50 mg/tablet.</span>
+            </div>
+            <ul class="steps calc">
+                <li>
+                    <span class="step-num">01</span>
+                    <div class="step-body">
+                        <strong>Tentukan C (konsentrasi larutan baku)</strong><br>
+                        5 mg baku → labu 25 mL → C = 5/25 = 0.2 mg/mL = <code>200 ppm</code><br>
+                        Konversi: 200 µg/mL ÷ 1000 = <code>0.2 mg/mL</code>
+                    </div>
+                </li>
+                <li>
+                    <span class="step-num">02</span>
+                    <div class="step-body">
+                        <strong>Hitung jumlah kafein aktual dalam sampel</strong><br>
+                        Rumus: <code>50 × C × (rU/rS)</code><br>
+                        = 50 × 0.2 × (134.8604 / 338.8604)<br>
+                        = 10 × 0.39798<br>
+                        = <code>3.9798 mg</code> kafein dalam 159.5 mg serbuk
+                    </div>
+                </li>
+                <li>
+                    <span class="step-num">03</span>
+                    <div class="step-body">
+                        <strong>Hitung % kadar</strong><br>
+                        % Kadar = (Jumlah aktual / Jumlah teoritis) × 100%<br>
+                        = (3.9798 / 10) × 100% = <code>39.80%</code>
+                    </div>
+                </li>
+                <li>
+                    <span class="step-num">04</span>
+                    <div class="step-body">
+                        <strong>Evaluasi hasil</strong><br>
+                        39.80% jauh di bawah syarat <code>90–110%</code> dari klaim etiket.<br>
+                        Penyebab utama: <strong>waktu retensi sampel (3.613 mnt) ≠ baku (2.253 mnt)</strong> → puncak
+                        yang terukur bukan kafein yang sebenarnya! Peak misidentification akibat column overloading &
+                        efek matriks.
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- ANOMALI tR -->
+        <div class="card">
+            <h3><span class="dot dot-r"></span>Anomali Waktu Retensi — Penyebab & Diagnosis</h3>
+            <div class="stat-row">
+                <div class="stat g">
+                    <div class="val">2.253</div>
+                    <div class="lbl">tR Baku Kafein (menit)</div>
+                </div>
+                <div class="stat r">
+                    <div class="val">3.613</div>
+                    <div class="lbl">tR Sampel Kafein (menit)</div>
+                </div>
+                <div class="stat r">
+                    <div class="val">1.36</div>
+                    <div class="lbl">Selisih (menit) — MELEBIHI ±0.1!</div>
+                </div>
+            </div>
+            <div class="tbl-wrap" style="margin-top:12px">
+                <table>
+                    <tr>
+                        <th>Penyebab</th>
+                        <th>Penjelasan</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Column Overloading</strong></td>
+                        <td>Konsentrasi 200 ppm terlalu pekat → saturasi fase diam → peak tailing & peak splitting →
+                            integrator salah identifikasi puncak</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Efek Matriks Eksipien</strong></td>
+                        <td>Eksipien tablet (pengikat, pengisi, disintegran) terlarut → mengubah selektivitas kolom
+                            secara temporer</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Solvent Effect</strong></td>
+                        <td>Perbedaan pH/kekuatan ionik pelarut sampel vs baku → mengganggu kinetika elusi</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Solusi</strong></td>
+                        <td>Turunkan konsentrasi ke <span class="td-ok">10–50 ppm</span>, lakukan column washing,
+                            optimasi preparasi sampel</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+
+        <!-- ═══════════════════════════════════════════════════
+     BAGIAN 5 — GC-MS PRINSIP
+═══════════════════════════════════════════════════ -->
+        <div class="sec-header" id="gcms-prinsip">
+            <span class="sec-badge badge-gcms">05</span>
+            <h2>GC-MS — Prinsip Kerja</h2>
+        </div>
+
+        <div class="analogy gcms">
+            <h4>🎪 Analogi Perlombaan Lari + Penimbang Berat Badan</h4>
+            <p>GC itu kayak <strong>jalur lari di oven panas</strong> — semua molekul start bareng, tapi yang "ringan"
+                dan "licin" (kurang interaksi sama FD) sampai garis finish duluan. MS di ujung finish itu kayak
+                <strong>mesin penimbang canggih yang motong-motong pelari dan ngitung berat tiap potongannya</strong>
+                (fragmentasi ion). Dari pola "potongan" itulah kita bisa tahu siapa si pelari — itu identitas senyawa!
+            </p>
+        </div>
+
+        <div class="grid2">
+            <div class="card">
+                <h3><span class="dot dot-g"></span>GC — Komponen & Fungsi</h3>
+                <ul>
+                    <li><strong>Gas pembawa (He):</strong> fase gerak yang mengalirkan sampel — harus Ultra High Purity
+                        99.999%</li>
+                    <li><strong>Injector (port injeksi):</strong> menguapkan sampel cair → masuk ke kolom</li>
+                    <li><strong>Oven kolom:</strong> mengatur suhu bertahap (ramping) agar senyawa terelusi satu per
+                        satu</li>
+                    <li><strong>Kolom kapiler (RXi-5MS):</strong> fase diam — 30m × 0.25mm. Semi-polar</li>
+                    <li><strong>Mode split:</strong> sebagian sampel dibuang, sebagian masuk kolom — cegah overloading
+                    </li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3><span class="dot dot-g"></span>MS — Cara Kerja</h3>
+                <ul>
+                    <li><strong>Ionisasi EI 70 eV:</strong> elektron dari filamen menembak molekul → ion M⁺• terbentuk
+                    </li>
+                    <li><strong>Fragmentasi:</strong> ion M⁺• pecah menjadi fragmen-fragmen khas (sidik jari!)</li>
+                    <li><strong>Pemisahan m/z:</strong> ion dipisahkan berdasarkan massa/muatan (m/z)</li>
+                    <li><strong>Detektor:</strong> merekam spektrum massa tiap senyawa</li>
+                    <li><strong>Library NIST:</strong> pola m/z dibandingkan — similarity index &gt;90% = identifikasi
+                        positif</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ALUR GC-MS -->
+        <div class="card">
+            <h3><span class="dot dot-g"></span>Alur Lengkap GC-MS</h3>
+            <div class="flow">
+                <div class="flow-box g">Injeksi 1µL</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box a">Port Injeksi (panas)</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box a">Uap + He → Kolom</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box g">Pemisahan di Oven</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box g">Masuk MS (vakum)</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box a">Ionisasi EI 70eV</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box a">Fragmentasi</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box g">Spektrum m/z</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box g">NIST Library</div>
+            </div>
+        </div>
+
+        <!-- KONDISI OPERASIONAL -->
+        <div class="card">
+            <h3><span class="dot dot-g"></span>Kondisi Operasional GC-MS Laprak</h3>
+            <div class="grid2">
+                <div class="tbl-wrap">
+                    <table>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Nilai</th>
+                        </tr>
+                        <tr>
+                            <td>Kolom</td>
+                            <td class="td-g">Rastek RXi-5MS 30m × 0.25mm</td>
+                        </tr>
+                        <tr>
+                            <td>Gas pembawa</td>
+                            <td class="td-g">Helium UHP 99.999%</td>
+                        </tr>
+                        <tr>
+                            <td>Kecepatan alir</td>
+                            <td class="td-g">0.3 mL/menit</td>
+                        </tr>
+                        <tr>
+                            <td>Tekanan kolom</td>
+                            <td class="td-g">13.7 kPa</td>
+                        </tr>
+                        <tr>
+                            <td>Suhu awal oven</td>
+                            <td class="td-g">70°C (atau 50°C di protokol)</td>
+                        </tr>
+                        <tr>
+                            <td>Mode injeksi</td>
+                            <td class="td-g">Split</td>
+                        </tr>
+                        <tr>
+                            <td>Volume injeksi</td>
+                            <td class="td-g">1 µL</td>
+                        </tr>
+                    </table>
+                </div>
+                <div>
+                    <p
+                        style="font-size:12px; color:var(--muted); margin-bottom:8px; font-family:'JetBrains Mono',monospace">
+                        PROGRAM SUHU OVEN (RAMPING)</p>
+                    <ul class="steps gcms" style="gap:6px">
+                        <li style="padding:8px 12px">
+                            <span class="step-num" style="font-size:11px">1</span>
+                            <div class="step-body" style="font-size:13px"><code>50°C</code> → <code>120°C</code> @
+                                20°C/menit</div>
+                        </li>
+                        <li style="padding:8px 12px">
+                            <span class="step-num" style="font-size:11px">2</span>
+                            <div class="step-body" style="font-size:13px"><code>120°C</code> → <code>150°C</code> @
+                                4°C/menit</div>
+                        </li>
+                        <li style="padding:8px 12px">
+                            <span class="step-num" style="font-size:11px">3</span>
+                            <div class="step-body" style="font-size:13px"><code>150°C</code> → <code>240°C</code> @
+                                20°C/menit, tahan <strong>10 menit</strong></div>
+                        </li>
+                    </ul>
+                    <div class="alert info" style="margin-top:8px">
+                        <span class="alert-icon">💡</span>
+                        <span>Ramping diperlukan agar senyawa volatil campuran (menthol, camphor) terelusi bergantian
+                            tanpa tumpang tindih.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PERBEDAAN HPLC vs GC -->
+        <div class="card">
+            <h3><span class="dot dot-a"></span>HPLC vs GC-MS — Perbandingan Kritis</h3>
+            <div class="tbl-wrap">
+                <table>
+                    <tr>
+                        <th>Aspek</th>
+                        <th class="compare-hdr-p">HPLC</th>
+                        <th class="compare-hdr-g">GC-MS</th>
+                    </tr>
+                    <tr>
+                        <td>Fase gerak</td>
+                        <td>Cairan (polar/nonpolar)</td>
+                        <td>Gas inert (He, N₂)</td>
+                    </tr>
+                    <tr>
+                        <td>Cocok untuk</td>
+                        <td>Senyawa tidak volatil, termolabil, polar</td>
+                        <td><strong>Senyawa volatil</strong>, BM rendah, tidak termolabil</td>
+                    </tr>
+                    <tr>
+                        <td>Identifikasi</td>
+                        <td>Waktu retensi (kualitatif terbatas)</td>
+                        <td>RT + spektrum massa → <strong>lebih spesifik</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Analisis laprak</td>
+                        <td>Parasetamol + kafein (tablet)</td>
+                        <td>Menthol + camphor (minyak atsiri)</td>
+                    </tr>
+                    <tr>
+                        <td>Detektor</td>
+                        <td>UV (275 nm)</td>
+                        <td>MS (ionisasi EI 70 eV)</td>
+                    </tr>
+                    <tr>
+                        <td>Kolom/fase diam</td>
+                        <td>C18 (nonpolar)</td>
+                        <td>RXi-5MS (semi-polar)</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- PREPARASI SAMPEL GC-MS -->
+        <div class="card">
+            <h3><span class="dot dot-g"></span>Preparasi Sampel Minyak Kapak untuk GC-MS</h3>
+            <ul class="steps gcms">
+                <li>
+                    <span class="step-num">01</span>
+                    <div class="step-body">
+                        <strong>Pipet 2 mL sampel + 2 mL n-heksana p.a.</strong><br>
+                        n-heksana: pelarut nonpolar → <em>like dissolves like</em> → menarik menthol & camphor selektif,
+                        meminimalkan ko-ekstraksi pengotor hidrofilik.
+                    </div>
+                </li>
+                <li>
+                    <span class="step-num">02</span>
+                    <div class="step-body">
+                        <strong>Vortex ±1 menit</strong> → campuran homogen → komponen volatil terlarut sempurna di fase
+                        n-heksana.
+                    </div>
+                </li>
+                <li>
+                    <span class="step-num">03</span>
+                    <div class="step-body">
+                        <strong>Tambah ±50 mg Na₂SO₄ anhidrat</strong> → kocok 30 detik → diamkan 5 menit.<br>
+                        Na₂SO₄ mengikat air sisa → Na₂SO₄•10H₂O (kristal hidrat). <strong>Kritis!</strong> Residu air
+                        dapat menghidrolisis fase diam kolom & rusak sistem vakum MS.
+                    </div>
+                </li>
+                <li>
+                    <span class="step-num">04</span>
+                    <div class="step-body">
+                        <strong>Ambil supernatan (fase n-heksana atas)</strong> dengan syringe → saring membran PTFE
+                        0.22 µm → tampung ke vial GC-MS 2 mL, tutup septum rapat.
+                    </div>
+                </li>
+            </ul>
+            <div class="alert warn" style="margin-top:12px">
+                <span class="alert-icon">⚠️</span>
+                <span><strong>Catatan penting:</strong> Laprak menggunakan n-heksana untuk sampel tapi
+                    <strong>metanol</strong> untuk larutan standar! Ini ketidaksesuaian pelarut → efisiensi penguapan
+                    berbeda di injector → mempengaruhi luas area. Seharusnya keduanya pakai n-heksana (sesuai FI VI
+                    monografi Mentol).</span>
+            </div>
+        </div>
+
+
+        <!-- ═══════════════════════════════════════════════════
+     BAGIAN 6 — IDENTIFIKASI GC-MS
+═══════════════════════════════════════════════════ -->
+        <div class="sec-header" id="gcms-ident">
+            <span class="sec-badge badge-gcms">06</span>
+            <h2>Identifikasi Senyawa GC-MS</h2>
+        </div>
+
+        <!-- HASIL ANALISIS -->
+        <div class="card">
+            <h3><span class="dot dot-g"></span>Hasil Analisis GC-MS Minyak Kapak — 9 Senyawa Utama</h3>
+            <div class="tbl-wrap">
+                <table>
+                    <tr>
+                        <th>Peak</th>
+                        <th>Senyawa</th>
+                        <th>RT (mnt)</th>
+                        <th>Area %</th>
+                        <th>Qual</th>
+                        <th>Golongan</th>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td><strong>β-Pinene</strong></td>
+                        <td>6.641</td>
+                        <td>4.10%</td>
+                        <td class="td-ok">94–97</td>
+                        <td>Monoterpen</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td><strong>β-Myrcene</strong></td>
+                        <td>6.776</td>
+                        <td>0.37%</td>
+                        <td class="td-warn">87–96</td>
+                        <td>Monoterpen</td>
+                    </tr>
+                    <tr>
+                        <td>14</td>
+                        <td><strong>D-Limonene</strong></td>
+                        <td>7.229</td>
+                        <td>5.57%</td>
+                        <td class="td-ok">94–99</td>
+                        <td>Monoterpen</td>
+                    </tr>
+                    <tr>
+                        <td>15</td>
+                        <td><strong>Eucalyptol (1,8-sineol)</strong></td>
+                        <td>7.270</td>
+                        <td><span class="td-bad">0.35%</span></td>
+                        <td class="td-ok">96–99</td>
+                        <td>Monoterpen teroksigenasi</td>
+                    </tr>
+                    <tr>
+                        <td>22</td>
+                        <td><strong>Menthone trans</strong></td>
+                        <td>8.801</td>
+                        <td>19.71%</td>
+                        <td class="td-ok">97–98</td>
+                        <td>p-Menthane teroksigenasi</td>
+                    </tr>
+                    <tr>
+                        <td>23</td>
+                        <td><strong>l-Menthone</strong></td>
+                        <td>8.936</td>
+                        <td>13.81%</td>
+                        <td class="td-ok">95–96</td>
+                        <td>p-Menthane teroksigenasi</td>
+                    </tr>
+                    <tr>
+                        <td>24</td>
+                        <td><strong>Menthol</strong> ⭐</td>
+                        <td>9.093</td>
+                        <td class="td-ok"><strong>33.86%</strong></td>
+                        <td class="td-warn">90–91</td>
+                        <td>p-Menthane teroksigenasi</td>
+                    </tr>
+                    <tr>
+                        <td>26</td>
+                        <td><strong>α-Terpineol</strong></td>
+                        <td>9.283</td>
+                        <td>0.95%</td>
+                        <td class="td-ok">90–97</td>
+                        <td>Monoterpen teroksigenasi</td>
+                    </tr>
+                    <tr>
+                        <td>32</td>
+                        <td><strong>(-)-Carvone</strong></td>
+                        <td>10.059</td>
+                        <td>0.08%</td>
+                        <td class="td-warn">81–95</td>
+                        <td>Monoterpen teroksigenasi</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="alert bad" style="margin-top:12px">
+                <span class="alert-icon">🚨</span>
+                <span><strong>Camphor: TIDAK TERDETEKSI!</strong> RT standar camphor = 8.671 mnt. Tidak ada peak di
+                    rentang tersebut pada sampel. Menthol + 2 isomer menthone = 67.38% — sampel ini bukan minyak kayu
+                    putih murni!</span>
+            </div>
+        </div>
+
+        <!-- IDENTIFIKASI MENTHOL VS CAMPHOR -->
+        <div class="card">
+            <h3><span class="dot dot-g"></span>Identifikasi Kualitatif — Menthol & Camphor</h3>
+            <div class="tbl-wrap">
+                <table>
+                    <tr>
+                        <th>Aspek</th>
+                        <th class="compare-hdr-g">Menthol</th>
+                        <th style="background:var(--red)22; color:var(--red)">Camphor</th>
+                    </tr>
+                    <tr>
+                        <td>RT Standar</td>
+                        <td class="td-g">9.007 menit</td>
+                        <td>8.671 menit</td>
+                    </tr>
+                    <tr>
+                        <td>RT Sampel</td>
+                        <td class="td-g">9.093 menit (selisih 0.086 mnt ✅)</td>
+                        <td class="td-bad">Tidak ada puncak ❌</td>
+                    </tr>
+                    <tr>
+                        <td>Ion Fragmen Standar (m/z)</td>
+                        <td class="td-g">71, 81, 95, 123, 82</td>
+                        <td>95, 81, 108, 152, 109</td>
+                    </tr>
+                    <tr>
+                        <td>Ion Fragmen Sampel (m/z)</td>
+                        <td class="td-g">71, 81, 95, 123, 82 ✅ identik!</td>
+                        <td class="td-bad">— (tidak terdeteksi)</td>
+                    </tr>
+                    <tr>
+                        <td>Hasil</td>
+                        <td class="td-ok"><strong>TERDETEKSI ✅</strong></td>
+                        <td class="td-bad"><strong>TIDAK TERDETEKSI ❌</strong></td>
+                    </tr>
+                    <tr>
+                        <td>CAS Number</td>
+                        <td>015356-70-4</td>
+                        <td>000089-80-5 (menthone trans)</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- ION FRAGMENTASI MENTHOL -->
+        <div class="card">
+            <h3><span class="dot dot-g"></span>Pola Fragmentasi Menthol — Hafal Ini!</h3>
+            <p style="font-size:13px; margin-bottom:12px">Menthol (Cyclohexanol) BM = 156. Ionisasi EI 70 eV:</p>
+            <div class="grid2">
+                <div>
+                    <div class="alert info">
+                        <span class="alert-icon">🔬</span>
+                        <div>
+                            <strong>m/z 71</strong> → pelepasan gugus isopropil dari menthol<br>
+                            <strong>m/z 123</strong> → [M−33]⁺ → kehilangan gugus metil (15) + air (18) = 33 dari BM
+                            156<br>
+                            <strong>m/z 81, 95</strong> → fragmen cincin sikloheksana<br>
+                            <strong>Qual 90–91</strong> → masih valid (&gt;90%) ✅
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="alert info">
+                        <span class="alert-icon">🔬</span>
+                        <div>
+                            <strong>Eucalyptol (1,8-sineol)</strong><br>
+                            m/z 71, 81, 108, 139, 154<br>
+                            Qual 96–99 ✅<br>
+                            Area hanya <strong>0.35%</strong> — jauh di bawah syarat minyak kayu putih murni (50–65% per
+                            SNI).<br>
+                            → Minyak Kapak = sediaan modifikasi!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KENAPA CAMPHOR TIDAK TERDETEKSI -->
+        <div class="card">
+            <h3><span class="dot dot-r"></span>Kenapa Camphor Tidak Terdeteksi?</h3>
+            <div class="tbl-wrap">
+                <table>
+                    <tr>
+                        <th>Kemungkinan Penyebab</th>
+                        <th>Penjelasan</th>
+                    </tr>
+                    <tr>
+                        <td>Tidak ada dalam formulasi</td>
+                        <td>Minyak Kapak mungkin memang tidak menambahkan camphor — hanya menthol</td>
+                    </tr>
+                    <tr>
+                        <td>Di bawah LOD</td>
+                        <td>Jika kadar camphor sangat rendah, instrumen tidak bisa mendeteksi</td>
+                    </tr>
+                    <tr>
+                        <td>Tumpang tindih dengan menthone</td>
+                        <td>RT camphor (8.671) sangat dekat dengan menthone trans (8.801) → mungkin peak overlap</td>
+                    </tr>
+                    <tr>
+                        <td>Degradasi/penguapan</td>
+                        <td>Camphor sangat volatil → bisa menguap sebelum analisis</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+
+        <!-- ═══════════════════════════════════════════════════
+     BAGIAN 7 — PERHITUNGAN GC-MS
+═══════════════════════════════════════════════════ -->
+        <div class="sec-header" id="gcms-calc">
+            <span class="sec-badge badge-calc">07</span>
+            <h2>Perhitungan Kadar GC-MS — Step by Step</h2>
+        </div>
+
+        <!-- RUMUS GC-MS -->
+        <div class="grid2">
+            <div class="formula">
+                <span class="label">Rumus Konsentrasi (External Standard)</span>
+                <div class="eq">C<sub>sampel</sub> = (Area sampel / Area standar) × C<sub>standar</sub></div>
+                <div class="vars">
+                    <span>C<sub>standar</sub></span> = 4000 ppm (standar menthol/camphor)
+                </div>
+            </div>
+            <div class="formula">
+                <span class="label">Koreksi Faktor Pengenceran</span>
+                <div class="eq">C<sub>asli</sub> = C<sub>sampel</sub> × F<sub>p</sub></div>
+                <div class="vars">
+                    <span>F<sub>p</sub></span> = V<sub>akhir</sub> / V<sub>sampel</sub> = 4 mL / 2 mL = <span
+                        style="color:var(--accent3)">2</span>
+                </div>
+            </div>
+        </div>
+        <div class="formula">
+            <span class="label">Konversi ke Persen Kadar</span>
+            <div class="eq">% Kadar = C<sub>asli</sub> (ppm) / 10.000 ppm × 100%</div>
+            <div class="vars">Ingat: 1% = 10.000 ppm · 1 ppm = 1 µg/mL = 0.0001%</div>
+        </div>
+
+        <!-- STEP BY STEP MENTHOL -->
+        <div class="card">
+            <h3><span class="dot dot-pk"></span>Perhitungan Lengkap Kadar Menthol (Dari Laprak)</h3>
+            <div class="alert info" style="margin-bottom:14px">
+                <span class="alert-icon">📋</span>
+                <span><strong>Data:</strong> C standar = 4000 ppm · Area standar menthol = 137.346.073 · Area sampel
+                    menthol = 1.150.003.027 · V sampel = 2 mL · V akhir (2+2) = 4 mL → Fp = 2</span>
+            </div>
+            <ul class="steps calc">
+                <li>
+                    <span class="step-num">01</span>
+                    <div class="step-body">
+                        <strong>Hitung konsentrasi dalam larutan hasil ekstraksi</strong><br>
+                        C<sub>sampel</sub> = (1.150.003.027 / 137.346.073) × 4000<br>
+                        = 8.373 × 4000<br>
+                        = <code>33.492 ppm</code>
+                    </div>
+                </li>
+                <li>
+                    <span class="step-num">02</span>
+                    <div class="step-body">
+                        <strong>Koreksi faktor pengenceran</strong><br>
+                        F<sub>p</sub> = V<sub>akhir</sub> / V<sub>sampel</sub> = 4 mL / 2 mL = <code>2</code><br>
+                        C<sub>asli</sub> = 33.492 × 2 = <code>66.984 ppm</code>
+                    </div>
+                </li>
+                <li>
+                    <span class="step-num">03</span>
+                    <div class="step-body">
+                        <strong>Konversi ke % kadar</strong><br>
+                        % Kadar = 66.984 / 10.000 × 100% = <code>6.70%</code>
+                    </div>
+                </li>
+                <li>
+                    <span class="step-num">04</span>
+                    <div class="step-body">
+                        <strong>Bandingkan dengan etiket</strong><br>
+                        Etiket klaim: <strong>20%</strong> menthol<br>
+                        % Kesesuaian = (6.70 / 20) × 100% = <code>33.50%</code><br>
+                        Syarat farmasi: <span class="hl-r">90–110%</span> → <strong>TIDAK MEMENUHI SYARAT ❌</strong>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- EVALUASI KESESUAIAN ETIKET -->
+        <div class="card">
+            <h3><span class="dot dot-r"></span>Analisis Kesesuaian Etiket & Keterbatasan Metode</h3>
+            <div class="stat-row">
+                <div class="stat g">
+                    <div class="val">6.70%</div>
+                    <div class="lbl">Kadar Menthol Terukur</div>
+                </div>
+                <div class="stat a">
+                    <div class="val">20%</div>
+                    <div class="lbl">Klaim Etiket</div>
+                </div>
+                <div class="stat r">
+                    <div class="val">33.50%</div>
+                    <div class="lbl">% Kesesuaian (seharusnya 90–110%)</div>
+                </div>
+            </div>
+            <div class="alert bad" style="margin-top:14px">
+                <span class="alert-icon">⚠️</span>
+                <div>
+                    <strong>Keterbatasan metode yang harus disebutkan:</strong><br>
+                    1. Pelarut standar (metanol) ≠ pelarut sampel (n-heksana) → efisiensi penguapan berbeda → area tidak
+                    valid untuk perbandingan langsung<br>
+                    2. Kalibrasi satu titik (single-point) → tidak ada verifikasi linearitas<br>
+                    3. Area sampel (1.15×10⁹) jauh lebih besar dari standar (1.37×10⁸) → kemungkinan di luar rentang
+                    linear detektor!<br>
+                    4. Tidak ada validasi metode lengkap (LOD/LOQ, akurasi, presisi)
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ═══════════════════════════════════════════════════
+     BAGIAN 8 — CBT QUICK FIRE
+═══════════════════════════════════════════════════ -->
+        <div class="sec-header" id="cbt">
+            <span class="sec-badge" style="background:var(--accent4)22; color:var(--accent4)">08</span>
+            <h2>CBT Quick Fire — 40 Soal 1 Menit!</h2>
+        </div>
+
+        <div class="alert pink">
+            <span class="alert-icon">⚡</span>
+            <span>Klik setiap kartu untuk lihat jawabannya. Latihan sampai kamu bisa jawab tanpa klik!</span>
+        </div>
+
+        <!-- HPLC QF -->
+        <p
+            style="font-size:12px; font-family:'JetBrains Mono',monospace; color:var(--accent1); margin:16px 0 8px; letter-spacing:1.5px">
+            HPLC / KCKT</p>
+
+        <div class="qf" onclick="this.classList.toggle('open')">
+            <div class="qf-q">Mengapa pada RP-HPLC, parasetamol elusi lebih dahulu dari kafein? <span
+                    class="arrow">▼</span></div>
+            <div class="qf-a">Parasetamol memiliki gugus hidroksil (-OH) dan amida yang bersifat lebih polar → afinitas
+                lebih besar terhadap fase gerak polar → keluar lebih cepat. Kafein memiliki 3 gugus metil hidrofobik →
+                interaksi lebih kuat dengan fase diam C18 nonpolar → tertahan lebih lama (tR ~2.11 mnt vs PCT ~1.32
+                mnt).</div>
+        </div>
+
+        <div class="qf" onclick="this.classList.toggle('open')">
+            <div class="qf-q">Apa itu tailing factor dan berapa syaratnya? <span class="arrow">▼</span></div>
+            <div class="qf-a">Tailing factor (T) = W₀.₀₅ / 2f. Ukuran kesimetrisan puncak. T=1.0 = sempurna. T>1 = ekor
+                ke kanan (tailing). Syarat laprak PCT+kafein: ≤1.2. Syarat protokol kafein murni FI VI: ≤2.0.</div>
+        </div>
+
+        <div class="qf" onclick="this.classList.toggle('open')">
+            <div class="qf-q">Mengapa fase gerak harus di-degassing sebelum analisis HPLC? <span class="arrow">▼</span>
+            </div>
+            <div class="qf-a">Gelembung udara terlarut yang tidak dihilangkan akan muncul saat tekanan turun →
+                menghasilkan noise artifacts pada detektor UV → mengganggu integrasi peak area → baseline tidak stabil.
+                Degassing: sonikasi 15–30 menit.</div>
+        </div>
+
+        <div class="qf" onclick="this.classList.toggle('open')">
+            <div class="qf-q">Apa fungsi baku internal (asam benzoat) dalam laprak PCT+kafein? <span
+                    class="arrow">▼</span></div>
+            <div class="qf-a">Mengoreksi variasi sistem antar injeksi (fluktuasi pompa, volume injeksi tidak konsisten).
+                Karena yang dihitung adalah RASIO area analit/area IS (bukan area mentah), variasi sistematis
+                terkompensasi otomatis.</div>
+        </div>
+
+        <div class="qf" onclick="this.classList.toggle('open')">
+            <div class="qf-q">Berapa nilai R² yang dipersyaratkan ICH Q2(R1) untuk linearitas? <span
+                    class="arrow">▼</span></div>
+            <div class="qf-a">r ≥ 0.999 → R² ≥ 0.9990 (atau 0.998). Hasil laprak: PCT R²=0.9637 dan kafein R²=0.9417 —
+                KEDUANYA TIDAK MEMENUHI syarat validasi!</div>
+        </div>
+
+        <div class="qf" onclick="this.classList.toggle('open')">
+            <div class="qf-q">Apa perbedaan rumus perhitungan kadar: laprak campuran vs kafein murni? <span
+                    class="arrow">▼</span></div>
+            <div class="qf-a">Campuran PCT+kafein (FI VI): mg/tablet = (RU/RS) × (CS/CU) × L — menggunakan baku internal
+                (IS). Kafein murni FI VI: mg = 50C × (rU/rS) — external standard, tidak ada IS, "50" = volume labu uji
+                dalam mL.</div>
+        </div>
+
+        <div class="qf" onclick="this.classList.toggle('open')">
+            <div class="qf-q">Mengapa intercept parasetamol bernilai jauh dari nol (−7.19)? <span class="arrow">▼</span>
+            </div>
+            <div class="qf-a">Mengindikasikan galat sistematis — bisa dari: baseline tidak stabil (drift), matriks
+                pelarut yang tidak terkompensasi penuh, atau kontaminasi background. Idealnya intercept mendekati 0
+                untuk regresi yang baik.</div>
+        </div>
+
+        <div class="qf" onclick="this.classList.toggle('open')">
+            <div class="qf-q">Dalam protokol kafein murni FI VI, apa fungsi teofilin? <span class="arrow">▼</span></div>
+            <div class="qf-a">Teofilin digunakan sebagai senyawa uji kesesuaian sistem (SST). Mirip struktur kafein
+                (bedanya hanya tidak ada gugus metil di N-7). Kolom C18 harus membuktikan resolusi ≥6.0 antara teofilin
+                dan kafein. RRT teofilin ≈ 0.69, kafein ≈ 1.0.</div>
+        </div>
+
+        <div class="qf" onclick="this.classList.toggle('open')">
+            <div class="qf-q">Apa yang menyebabkan waktu retensi sampel Fasidol Plus (3.613 mnt) berbeda jauh dari baku
+                kafein (2.253 mnt)? <span class="arrow">▼</span></div>
+            <div class="qf-a">Tiga kemungkinan: (1) Column overloading akibat konsentrasi 200 ppm terlalu tinggi → peak
+                tailing & splitting → peak misidentification; (2) Efek matriks eksipien tablet; (3) Perbedaan
+                pH/kekuatan ionik antara pelarut sampel dan baku (solvent effect).</div>
+        </div>
+
+        <div class="qf" onclick="this.classList.toggle('open')">
+            <div class="qf-q">Mengapa slope kafein lebih besar dari slope parasetamol di kurva kalibrasi? <span
+                    class="arrow">▼</span></div>
+            <div class="qf-a">Kafein memiliki absorptivitas molar yang lebih tinggi pada panjang gelombang 273–275 nm
+                (kromofor gugus karbonil terkonjugasi). Sehingga untuk setiap 1 ppm kenaikan konsentrasi, kenaikan area
+                kafein lebih besar → detektor UV lebih sensitif terhadap kafein pada λ tersebut.</div>
+        </div>
+
+        <div class="qf" onclick="this.classList.toggle('open')">
+            <div class="qf-q">Apa yang dimaksud %RSD dalam SST dan berapa syaratnya? <span class="arrow">▼</span></div>
+            <div class="qf-a">%RSD = (SD / x̄) × 100%. Mengukur keterulangan (presisi) sistem dari minimal 5 injeksi
+                berulang larutan baku. Syarat: ≤2.0%. Jika %RSD >2% → sistem tidak stabil → kemungkinan kebocoran,
+                fluktuasi pompa, atau kerusakan injektor.</div>
+        </div>
+
+        <div class="qf" onclick="this.classList.toggle('open')">
+            <div class="qf-q">Apa bedanya RSD repeatability vs intermediate precision? <span class="arrow">▼</span>
+            </div>
+            <div class="qf-a">Repeatability = 1 analis, 1 hari, kondisi identik, n=6 replikasi. Intermediate precision =
+                analis berbeda ATAU hari berbeda, n=6/sesi. Keduanya harus %RSD ≤2.0% (FI VI, ICH).</div>
+        </div>
+
+        <!-- GC-MS QF -->
+        <p
+            style="font-size:12px; font-family:'JetBrains Mono',monospace; color:var(--accent2); margin:20px 0 8px; letter-spacing:1.5px">
+            GC-MS</p>
+
+        <div class="qf" onclick="this.classList.toggle('open')">
+            <div class="qf-q">Mengapa GC-MS cocok untuk analisis minyak atsiri, bukan HPLC? <span class="arrow">▼</span>
+            </div>
+            <div class="qf-a">Komponen minyak atsiri (monoterpen seperti menthol, camphor, eucalyptol) bersifat VOLATIL,
+                BM rendah, dan tidak termolabil → dapat diuapkan di port injeksi GC. HPLC memerlukan fase gerak cair dan
+                tidak bisa memisahkan senyawa volatil seefektif GC. Plus, MS memberikan identifikasi yang jauh lebih
+                spesifik via spektrum massa.</div>
+        </div>
+
+        <div class="qf" onclick="this.classList.toggle('open')">
+            <div class="qf-q">Apa itu ionisasi EI 70 eV dalam GC-MS? <span class="arrow">▼</span></div>
+            <div class="qf-a">Electron Ionization: elektron berenergi 70 eV dari filamen rhenium/tungsten menembak
+                molekul analit dalam kondisi vakum → terbentuk ion radikal M⁺• (ion molekul) → M⁺• tidak stabil → pecah
+                menjadi fragmen-fragmen ion dengan m/z khas → spektrum massa = "sidik jari" senyawa.</div>
+        </div>
+
+        <div class="qf" onclick="this.classList.toggle('open')">
+            <div class="qf-q">Apa kriteria identifikasi positif senyawa dengan NIST Library? <span
+                    class="arrow">▼</span></div>
+            <div class="qf-a">Dua kriteria harus terpenuhi: (1) Waktu Retensi sampel mendekati RT standar (toleransi
+                kecil); (2) Pola fragmentasi m/z identik/sangat mirip dengan database → Similarity Index (Qual) ≥90.
+                Keduanya harus cocok, bukan hanya salah satu!</div>
+        </div>
+
+        <div class="qf" onclick="this.classList.toggle('open')">
+            <div class="qf-q">Mengapa n-heksana digunakan sebagai pelarut ekstraksi (bukan air/etanol)? <span
+                    class="arrow">▼</span></div>
+            <div class="qf-a">Like dissolves like! Menthol dan camphor adalah senyawa nonpolar/semi-polar. n-Heksana
+                (nonpolar) → melarutkan komponen minyak secara selektif → meminimalkan ko-ekstraksi pengotor hidrofilik.
+                Plus, n-heksana mudah menguap di port injeksi GC (titik didih rendah = 69°C).</div>
+        </div>
+
+        <div class="qf" onclick="this.classList.toggle('open')">
+            <div class="qf-q">Mengapa menthol menjadi komponen dominan (33.86%) di Minyak Kapak? <span
+                    class="arrow">▼</span></div>
+            <div class="qf-a">Minyak Kapak adalah sediaan MODIFIKASI (bukan minyak kayu putih murni). Produsen
+                menambahkan menthol eksogen dalam jumlah besar untuk efek sensasi hangat-dingin dan aromaterapi.
+                Buktinya: eucalyptol hanya 0.35% — padahal minyak kayu putih murni harus mengandung 1,8-sineol ≥50–65%
+                (SNI 06-3954-2006).</div>
+        </div>
+
+        <div class="qf" onclick="this.classList.toggle('open')">
+            <div class="qf-q">Berapa % kesesuaian kadar menthol terhadap etiket dan apakah memenuhi syarat? <span
+                    class="arrow">▼</span></div>
+            <div class="qf-a">Terukur 6.70%, klaim etiket 20%. % Kesesuaian = (6.70/20) × 100% = 33.50%. TIDAK MEMENUHI
+                SYARAT. Syarat farmasi: 90–110% dari label claim. Catatan: hasil ini perlu diinterpretasi hati-hati
+                karena keterbatasan metode (pelarut standar ≠ pelarut sampel, kalibrasi satu titik).</div>
+        </div>
+
+        <div class="qf" onclick="this.classList.toggle('open')">
+            <div class="qf-q">Apa fungsi Na₂SO₄ anhidrat dalam preparasi sampel GC-MS? <span class="arrow">▼</span>
+            </div>
+            <div class="qf-a">Agen pengering! Mengikat sisa air dalam ekstrak → membentuk Na₂SO₄·10H₂O (kristal hidrat).
+                Penting karena: residu air dapat menghidrolisis fase diam kolom kapiler, merusak sistem vakum MS, dan
+                menghasilkan peak air besar yang mengganggu kromatogram.</div>
+        </div>
+
+        <div class="qf" onclick="this.classList.toggle('open')">
+            <div class="qf-q">Mengapa suhu oven GC diprogram bertahap (ramping)? <span class="arrow">▼</span></div>
+            <div class="qf-a">Campuran mengandung senyawa dengan titik didih berbeda (β-pinene tR 6.6 mnt, menthol tR
+                9.1 mnt, carvone tR 10 mnt). Suhu konstan → senyawa ringan elusi terlalu cepat (peak overlap) atau
+                senyawa berat tidak terelusi. Ramping memastikan tiap golongan senyawa terelusi pada suhu optimal secara
+                berurutan.</div>
+        </div>
+
+        <div class="qf" onclick="this.classList.toggle('open')">
+            <div class="qf-q">Apa m/z ion fragmen khas menthol dan dari mana asalnya? <span class="arrow">▼</span></div>
+            <div class="qf-a">m/z 71 (pelepasan gugus isopropil), m/z 123 ([M−33]⁺ → kehilangan CH₃ + H₂O = 15+18=33
+                dari BM 156), m/z 81 dan 95 (fragmen cincin sikloheksana). Pola ini CAS 015356-70-4 di NIST Library.
+            </div>
+        </div>
+
+        <div class="qf" onclick="this.classList.toggle('open')">
+            <div class="qf-q">Apa keterbatasan utama perhitungan kadar menthol di laprak? <span class="arrow">▼</span>
+            </div>
+            <div class="qf-a">3 keterbatasan: (1) Ketidaksesuaian pelarut — standar pakai metanol, sampel pakai
+                n-heksana → efisiensi penguapan berbeda → area tidak bisa dibandingkan langsung; (2) Kalibrasi satu
+                titik (4000 ppm) — tidak memverifikasi linearitas; (3) Area sampel (~1.15×10⁹) >> area standar
+                (~1.37×10⁸) → kemungkinan di luar rentang linear detektor.</div>
+        </div>
+
+        <div class="qf" onclick="this.classList.toggle('open')">
+            <div class="qf-q">Apa perbedaan antara kromatogram TIC dan spektrum massa? <span class="arrow">▼</span>
+            </div>
+            <div class="qf-a">TIC (Total Ion Chromatogram) = grafik intensitas vs waktu retensi — menunjukkan KAPAN dan
+                BERAPA BANYAK senyawa keluar dari kolom (kayak kromatogram HPLC). Spektrum massa = grafik intensitas vs
+                m/z untuk satu puncak tertentu — menunjukkan IDENTITAS senyawa via pola fragmentasi.</div>
+        </div>
+
+        <div class="qf" onclick="this.classList.toggle('open')">
+            <div class="qf-q">Mengapa menggunakan gas He dengan kemurnian ultra-high (99.999%)? <span
+                    class="arrow">▼</span></div>
+            <div class="qf-a">Kontaminan dalam gas pembawa (air, O₂, CO₂, organik) dapat: (1) merusak kolom kapiler; (2)
+                bereaksi dengan fase diam; (3) menghasilkan background noise pada MS; (4) mengganggu ionisasi di sumber
+                ion. Kemurnian 99.999% = trace impurity hanya 10 ppm.</div>
+        </div>
+
+        <!-- RINGKASAN ANGKA PENTING -->
+        <div class="card" style="margin-top:32px; border-color:var(--accent4)44;">
+            <h3><span class="dot" style="background:var(--accent4)"></span>Angka-Angka Yang Harus Dihapal untuk CBT</h3>
+            <div class="grid2">
+                <div>
+                    <p
+                        style="font-size:12px; color:var(--accent1); font-family:'JetBrains Mono',monospace; margin-bottom:8px; letter-spacing:1px">
+                        HPLC</p>
+                    <ul style="font-size:13px; line-height:2.2">
+                        <li>Fase gerak: <strong>69:28:3</strong> (Air:MeOH:As.Asetat)</li>
+                        <li>λ detektor: <strong>275 nm</strong></li>
+                        <li>Laju alir: <strong>2.0 mL/menit</strong> (laprak) | 1.0 mL/menit (protokol kafein)</li>
+                        <li>Suhu kolom: <strong>45±1°C</strong></li>
+                        <li>Volume injeksi: <strong>10 µL</strong></li>
+                        <li>Resolusi SST: ≥1.4 (laprak) | ≥6.0 (protokol kafein)</li>
+                        <li>Tailing factor: ≤1.2 (laprak) | ≤2.0 (protokol kafein)</li>
+                        <li>%RSD: ≤2.0%</li>
+                        <li>R² syarat: ≥0.9990</li>
+                        <li>% Recovery: 98–102% (FI VI)</li>
+                        <li>RRT PCT: 0.3 | Kafein: 0.5</li>
+                        <li>RRT Teofilin: 0.69 | Kafein: 1.0</li>
+                        <li>Baku internal: <strong>Asam Benzoat P 6 mg/mL</strong></li>
+                        <li>LOD = <strong>3.3</strong> × Sy/x / b</li>
+                        <li>LOQ = <strong>10</strong> × Sy/x / b</li>
+                    </ul>
+                </div>
+                <div>
+                    <p
+                        style="font-size:12px; color:var(--accent2); font-family:'JetBrains Mono',monospace; margin-bottom:8px; letter-spacing:1px">
+                        GC-MS</p>
+                    <ul style="font-size:13px; line-height:2.2">
+                        <li>Ionisasi: <strong>EI 70 eV</strong></li>
+                        <li>Kolom: <strong>RXi-5MS 30m × 0.25mm</strong></li>
+                        <li>Gas pembawa: <strong>He 99.999%</strong></li>
+                        <li>Laju alir: <strong>0.3 mL/menit</strong></li>
+                        <li>Volume injeksi: <strong>1 µL</strong></li>
+                        <li>Mode injeksi: <strong>Split</strong></li>
+                        <li>Tekanan kolom: <strong>13.7 kPa</strong></li>
+                        <li>Similarity index minimal: <strong>&gt;90%</strong></li>
+                        <li>Menthol tR standar: <strong>9.007 mnt</strong></li>
+                        <li>Menthol tR sampel: <strong>9.093 mnt</strong></li>
+                        <li>Camphor tR standar: <strong>8.671 mnt</strong></li>
+                        <li>m/z menthol: <strong>71, 81, 95, 123, 82</strong></li>
+                        <li>C standar menthol/camphor: <strong>4000 ppm</strong></li>
+                        <li>Fp: <strong>Vakhir/Vsampel = 4/2 = 2</strong></li>
+                        <li>1% = <strong>10.000 ppm</strong></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /wrapper -->
+
+    <script>
+        // Smooth toggle for QF cards
+        document.querySelectorAll('.qf').forEach(card => {
+            card.addEventListener('click', function () {
+                // already handled by onclick
+            });
+        });
+    </script>
+
+</body>
+
+</html>
